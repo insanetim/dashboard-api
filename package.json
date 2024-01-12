@@ -1,0 +1,12 @@
+{
+  "name": "dashboard-api",
+  "version": "1.0.0",
+  "description": "API для учебного проекта по NodeJS",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Timur Medvedev <insanetim1986@gmail.com>",
+  "license": "ISC"
+}
