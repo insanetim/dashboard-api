@@ -7,6 +7,6 @@ export interface IExeptionFilter {
     err: Error | HTTPError,
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => void
 }

@@ -9,6 +9,11 @@ import { LoggerService } from './logger/logger.service'
 import { IUserController } from './users/users.controller.interface'
 import { UserController } from './users/users.controller'
 
+export interface IBootstrapReturn {
+  appContainer: Container
+  app: App
+}
+
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<App>(TYPES.Application).to(App)
   bind<ILogger>(TYPES.ILogger).to(LoggerService)
@@ -16,7 +21,7 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<IUserController>(TYPES.UserController).to(UserController)
 })
 
-function bootstrap() {
+function bootstrap(): IBootstrapReturn {
   const appContainer = new Container()
   appContainer.load(appBindings)
   const app = appContainer.get<App>(TYPES.Application)
