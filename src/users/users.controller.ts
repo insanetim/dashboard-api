@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
 import { inject, injectable } from 'inversify'
-import 'reflect-metadata'
 
 import { TYPES } from '../types'
 import { IUserController } from './users.controller.interface'
@@ -16,7 +15,7 @@ import { ValidateMiddleware } from '../common/validate.middleware'
 export class UserController extends BaseController implements IUserController {
   constructor(
     @inject(TYPES.ILogger) private loggerService: ILogger,
-    @inject(TYPES.IUserService) private userService: UserService,
+    @inject(TYPES.UserService) private userService: UserService,
   ) {
     super(loggerService)
     this.bindRoutes([
@@ -26,17 +25,25 @@ export class UserController extends BaseController implements IUserController {
         func: this.register,
         middlewares: [new ValidateMiddleware(UserRegisterDto)],
       },
-      { path: '/login', method: 'post', func: this.login },
+      {
+        path: '/login',
+        method: 'post',
+        func: this.login,
+        middlewares: [new ValidateMiddleware(UserLoginDto)],
+      },
     ])
   }
 
-  login(
-    req: Request<{}, {}, UserLoginDto>,
+  async login(
+    { body }: Request<{}, {}, UserLoginDto>,
     res: Response,
     next: NextFunction,
-  ): void {
-    console.log(req.body)
-    next(new HTTPError(401, 'Ошибка авторизации', 'login'))
+  ): Promise<void> {
+    const result = await this.userService.validateUser(body)
+    if (!result) {
+      return next(new HTTPError(401, 'Ошибка авторизации', 'login'))
+    }
+    this.ok(res, {})
   }
 
   async register(
@@ -48,6 +55,6 @@ export class UserController extends BaseController implements IUserController {
     if (!result) {
       return next(new HTTPError(422, 'Такой пользователь уже существует'))
     }
-    this.ok(res, { email: result.email })
+    this.ok(res, { email: result.email, id: result.id })
   }
 }
