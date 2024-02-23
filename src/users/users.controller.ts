@@ -3,22 +3,25 @@ import { inject, injectable } from 'inversify'
 import { sign } from 'jsonwebtoken'
 
 import { TYPES } from '../types'
-import { IUserController } from './users.controller.interface'
+import { IUsersController } from './users.controller.interface'
 import { BaseController } from '../common/base.controller'
 import { HTTPError } from '../errors/http-error.class'
 import { ILogger } from '../logger/logger.interface'
 import { UserLoginDto } from './dto/user-login.dto'
 import { UserRegisterDto } from './dto/user-register.dto'
-import { UserService } from './users.service'
+import { UsersService } from './users.service'
 import { ValidateMiddleware } from '../common/validate.middleware'
 import { IConfigService } from '../config/config.service.interface'
 import { AuthGuard } from '../common/auth.guard'
 
 @injectable()
-export class UserController extends BaseController implements IUserController {
+export class UsersController
+  extends BaseController
+  implements IUsersController
+{
   constructor(
     @inject(TYPES.ILogger) private loggerService: ILogger,
-    @inject(TYPES.UserService) private userService: UserService,
+    @inject(TYPES.UsersService) private userService: UsersService,
     @inject(TYPES.ConfigService) private configService: IConfigService,
   ) {
     super(loggerService)

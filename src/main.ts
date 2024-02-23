@@ -1,5 +1,5 @@
-import { Container, ContainerModule, interfaces } from 'inversify'
 import 'reflect-metadata'
+import { Container, ContainerModule, interfaces } from 'inversify'
 
 import { TYPES } from './types'
 import { App } from './app'
@@ -7,10 +7,10 @@ import { IExeptionFilter } from './errors/exeption.filter.interface'
 import { ExeptionFilter } from './errors/exeption.filter'
 import { ILogger } from './logger/logger.interface'
 import { LoggerService } from './logger/logger.service'
-import { IUserController } from './users/users.controller.interface'
-import { UserController } from './users/users.controller'
-import { IUserService } from './users/users.service.interface'
-import { UserService } from './users/users.service'
+import { IUsersController } from './users/users.controller.interface'
+import { UsersController } from './users/users.controller'
+import { IUsersService } from './users/users.service.interface'
+import { UsersService } from './users/users.service'
 import { IConfigService } from './config/config.service.interface'
 import { ConfigService } from './config/config.service'
 import { PrismaService } from './database/prisma.service'
@@ -25,8 +25,8 @@ export interface IBootstrapReturn {
 export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<ILogger>(TYPES.ILogger).to(LoggerService).inSingletonScope()
   bind<IExeptionFilter>(TYPES.ExeptionFilter).to(ExeptionFilter)
-  bind<IUserController>(TYPES.UserController).to(UserController)
-  bind<IUserService>(TYPES.UserService).to(UserService)
+  bind<IUsersController>(TYPES.UsersController).to(UsersController)
+  bind<IUsersService>(TYPES.UsersService).to(UsersService)
   bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope()
   bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope()
   bind<IUsersRepository>(TYPES.UsersRepository)
@@ -35,13 +35,13 @@ export const appBindings = new ContainerModule((bind: interfaces.Bind) => {
   bind<App>(TYPES.Application).to(App)
 })
 
-function bootstrap(): IBootstrapReturn {
+async function bootstrap(): Promise<IBootstrapReturn> {
   const appContainer = new Container()
   appContainer.load(appBindings)
   const app = appContainer.get<App>(TYPES.Application)
-  app.init()
+  await app.init()
 
   return { app, appContainer }
 }
 
-export const { app, appContainer } = bootstrap()
+export const boot = bootstrap()
